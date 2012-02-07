@@ -6,9 +6,8 @@ package com.springsource.petclinic.domain;
 import com.springsource.petclinic.domain.Owner;
 import com.springsource.petclinic.domain.OwnerDataOnDemand;
 import com.springsource.petclinic.domain.Pet;
+import com.springsource.petclinic.domain.PetDataOnDemand;
 import com.springsource.petclinic.reference.PetType;
-import java.lang.Float;
-import java.lang.String;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -67,17 +66,21 @@ privileged aspect PetDataOnDemand_Roo_DataOnDemand {
     
     public Pet PetDataOnDemand.getSpecificPet(int index) {
         init();
-        if (index < 0) index = 0;
-        if (index > (data.size() - 1)) index = data.size() - 1;
+        if (index < 0) {
+            index = 0;
+        }
+        if (index > (data.size() - 1)) {
+            index = data.size() - 1;
+        }
         Pet obj = data.get(index);
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Pet.findPet(id);
     }
     
     public Pet PetDataOnDemand.getRandomPet() {
         init();
         Pet obj = data.get(rnd.nextInt(data.size()));
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Pet.findPet(id);
     }
     
@@ -89,20 +92,22 @@ privileged aspect PetDataOnDemand_Roo_DataOnDemand {
         int from = 0;
         int to = 10;
         data = Pet.findPetEntries(from, to);
-        if (data == null) throw new IllegalStateException("Find entries implementation for 'Pet' illegally returned null");
+        if (data == null) {
+            throw new IllegalStateException("Find entries implementation for 'Pet' illegally returned null");
+        }
         if (!data.isEmpty()) {
             return;
         }
         
-        data = new ArrayList<com.springsource.petclinic.domain.Pet>();
+        data = new ArrayList<Pet>();
         for (int i = 0; i < 10; i++) {
             Pet obj = getNewTransientPet(i);
             try {
                 obj.persist();
             } catch (ConstraintViolationException e) {
                 StringBuilder msg = new StringBuilder();
-                for (Iterator<ConstraintViolation<?>> it = e.getConstraintViolations().iterator(); it.hasNext();) {
-                    ConstraintViolation<?> cv = it.next();
+                for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                    ConstraintViolation<?> cv = iter.next();
                     msg.append("[").append(cv.getConstraintDescriptor()).append(":").append(cv.getMessage()).append("=").append(cv.getInvalidValue()).append("]");
                 }
                 throw new RuntimeException(msg.toString(), e);

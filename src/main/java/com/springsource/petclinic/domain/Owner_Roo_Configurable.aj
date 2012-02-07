@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.Owner;
 import org.springframework.beans.factory.annotation.Configurable;
 
 privileged aspect Owner_Roo_Configurable {

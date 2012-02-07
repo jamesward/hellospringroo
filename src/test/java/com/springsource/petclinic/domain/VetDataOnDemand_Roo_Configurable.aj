@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.VetDataOnDemand;
 import org.springframework.beans.factory.annotation.Configurable;
 
 privileged aspect VetDataOnDemand_Roo_Configurable {

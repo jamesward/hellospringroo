@@ -8,7 +8,7 @@ import com.springsource.petclinic.domain.PetDataOnDemand;
 import com.springsource.petclinic.domain.Vet;
 import com.springsource.petclinic.domain.VetDataOnDemand;
 import com.springsource.petclinic.domain.Visit;
-import java.lang.String;
+import com.springsource.petclinic.domain.VisitDataOnDemand;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,17 +68,21 @@ privileged aspect VisitDataOnDemand_Roo_DataOnDemand {
     
     public Visit VisitDataOnDemand.getSpecificVisit(int index) {
         init();
-        if (index < 0) index = 0;
-        if (index > (data.size() - 1)) index = data.size() - 1;
+        if (index < 0) {
+            index = 0;
+        }
+        if (index > (data.size() - 1)) {
+            index = data.size() - 1;
+        }
         Visit obj = data.get(index);
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Visit.findVisit(id);
     }
     
     public Visit VisitDataOnDemand.getRandomVisit() {
         init();
         Visit obj = data.get(rnd.nextInt(data.size()));
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Visit.findVisit(id);
     }
     
@@ -90,20 +94,22 @@ privileged aspect VisitDataOnDemand_Roo_DataOnDemand {
         int from = 0;
         int to = 10;
         data = Visit.findVisitEntries(from, to);
-        if (data == null) throw new IllegalStateException("Find entries implementation for 'Visit' illegally returned null");
+        if (data == null) {
+            throw new IllegalStateException("Find entries implementation for 'Visit' illegally returned null");
+        }
         if (!data.isEmpty()) {
             return;
         }
         
-        data = new ArrayList<com.springsource.petclinic.domain.Visit>();
+        data = new ArrayList<Visit>();
         for (int i = 0; i < 10; i++) {
             Visit obj = getNewTransientVisit(i);
             try {
                 obj.persist();
             } catch (ConstraintViolationException e) {
                 StringBuilder msg = new StringBuilder();
-                for (Iterator<ConstraintViolation<?>> it = e.getConstraintViolations().iterator(); it.hasNext();) {
-                    ConstraintViolation<?> cv = it.next();
+                for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                    ConstraintViolation<?> cv = iter.next();
                     msg.append("[").append(cv.getConstraintDescriptor()).append(":").append(cv.getMessage()).append("=").append(cv.getInvalidValue()).append("]");
                 }
                 throw new RuntimeException(msg.toString(), e);

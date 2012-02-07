@@ -6,8 +6,6 @@ package com.springsource.petclinic.domain;
 import com.springsource.petclinic.domain.Owner;
 import com.springsource.petclinic.domain.Pet;
 import com.springsource.petclinic.reference.PetType;
-import java.lang.Float;
-import java.lang.String;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 

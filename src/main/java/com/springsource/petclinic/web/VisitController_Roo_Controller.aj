@@ -6,12 +6,9 @@ package com.springsource.petclinic.web;
 import com.springsource.petclinic.domain.Pet;
 import com.springsource.petclinic.domain.Vet;
 import com.springsource.petclinic.domain.Visit;
+import com.springsource.petclinic.web.VisitController;
 import java.io.UnsupportedEncodingException;
-import java.lang.Integer;
-import java.lang.Long;
-import java.lang.String;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -19,7 +16,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,11 +25,10 @@ import org.springframework.web.util.WebUtils;
 
 privileged aspect VisitController_Roo_Controller {
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String VisitController.create(@Valid Visit visit, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("visit", visit);
-            addDateTimeFormatPatterns(uiModel);
+            populateEditForm(uiModel, visit);
             return "visits/create";
         }
         uiModel.asMap().clear();
@@ -41,19 +36,18 @@ privileged aspect VisitController_Roo_Controller {
         return "redirect:/visits/" + encodeUrlPathSegment(visit.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(params = "form", method = RequestMethod.GET)
+    @RequestMapping(params = "form", produces = "text/html")
     public String VisitController.createForm(Model uiModel) {
-        uiModel.addAttribute("visit", new Visit());
-        addDateTimeFormatPatterns(uiModel);
-        List dependencies = new ArrayList();
+        populateEditForm(uiModel, new Visit());
+        List<String[]> dependencies = new ArrayList<String[]>();
         if (Pet.countPets() == 0) {
-            dependencies.add(new String[]{"pet", "pets"});
+            dependencies.add(new String[] { "pet", "pets" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "visits/create";
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", produces = "text/html")
     public String VisitController.show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("visit", Visit.findVisit(id));
@@ -61,7 +55,7 @@ privileged aspect VisitController_Roo_Controller {
         return "visits/show";
     }
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(produces = "text/html")
     public String VisitController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
@@ -76,11 +70,10 @@ privileged aspect VisitController_Roo_Controller {
         return "visits/list";
     }
     
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
     public String VisitController.update(@Valid Visit visit, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("visit", visit);
-            addDateTimeFormatPatterns(uiModel);
+            populateEditForm(uiModel, visit);
             return "visits/update";
         }
         uiModel.asMap().clear();
@@ -88,14 +81,13 @@ privileged aspect VisitController_Roo_Controller {
         return "redirect:/visits/" + encodeUrlPathSegment(visit.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String VisitController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("visit", Visit.findVisit(id));
-        addDateTimeFormatPatterns(uiModel);
+        populateEditForm(uiModel, Visit.findVisit(id));
         return "visits/update";
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String VisitController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         Visit visit = Visit.findVisit(id);
         visit.remove();
@@ -105,25 +97,15 @@ privileged aspect VisitController_Roo_Controller {
         return "redirect:/visits";
     }
     
-    @ModelAttribute("pets")
-    public Collection<Pet> VisitController.populatePets() {
-        return Pet.findAllPets();
-    }
-    
-    @ModelAttribute("vets")
-    public Collection<Vet> VisitController.populateVets() {
-        return Vet.findAllVets();
-    }
-    
-    @ModelAttribute("visits")
-    public Collection<Visit> VisitController.populateVisits() {
-        return Visit.findAllVisits();
-    }
-    
     void VisitController.addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("visit_visitdate_date_format", DateTimeFormat.patternForStyle("M-", LocaleContextHolder.getLocale()));
-        uiModel.addAttribute("visit_minvisitdate_date_format", DateTimeFormat.patternForStyle("M-", LocaleContextHolder.getLocale()));
-        uiModel.addAttribute("visit_maxvisitdate_date_format", DateTimeFormat.patternForStyle("M-", LocaleContextHolder.getLocale()));
+    }
+    
+    void VisitController.populateEditForm(Model uiModel, Visit visit) {
+        uiModel.addAttribute("visit", visit);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("pets", Pet.findAllPets());
+        uiModel.addAttribute("vets", Vet.findAllVets());
     }
     
     String VisitController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
@@ -133,8 +115,7 @@ privileged aspect VisitController_Roo_Controller {
         }
         try {
             pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        }
-        catch (UnsupportedEncodingException uee) {}
+        } catch (UnsupportedEncodingException uee) {}
         return pathSegment;
     }
     

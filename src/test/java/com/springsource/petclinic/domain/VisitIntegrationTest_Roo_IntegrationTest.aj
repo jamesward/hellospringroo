@@ -3,9 +3,9 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.Visit;
 import com.springsource.petclinic.domain.VisitDataOnDemand;
-import java.lang.Integer;
-import java.lang.Long;
+import com.springsource.petclinic.domain.VisitIntegrationTest;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;

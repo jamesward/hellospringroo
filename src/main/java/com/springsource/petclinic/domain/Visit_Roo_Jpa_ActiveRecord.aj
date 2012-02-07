@@ -4,16 +4,38 @@
 package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.Visit;
-import java.lang.Long;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
-privileged aspect Visit_Roo_Entity {
+privileged aspect Visit_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
     transient EntityManager Visit.entityManager;
+    
+    public static final EntityManager Visit.entityManager() {
+        EntityManager em = new Visit().entityManager;
+        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        return em;
+    }
+    
+    public static long Visit.countVisits() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM Visit o", Long.class).getSingleResult();
+    }
+    
+    public static List<Visit> Visit.findAllVisits() {
+        return entityManager().createQuery("SELECT o FROM Visit o", Visit.class).getResultList();
+    }
+    
+    public static Visit Visit.findVisit(Long id) {
+        if (id == null) return null;
+        return entityManager().find(Visit.class, id);
+    }
+    
+    public static List<Visit> Visit.findVisitEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM Visit o", Visit.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
     
     @Transactional
     public void Visit.persist() {
@@ -50,29 +72,6 @@ privileged aspect Visit_Roo_Entity {
         Visit merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
-    }
-    
-    public static final EntityManager Visit.entityManager() {
-        EntityManager em = new Visit().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
-        return em;
-    }
-    
-    public static long Visit.countVisits() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM Visit o", Long.class).getSingleResult();
-    }
-    
-    public static List<Visit> Visit.findAllVisits() {
-        return entityManager().createQuery("SELECT o FROM Visit o", Visit.class).getResultList();
-    }
-    
-    public static Visit Visit.findVisit(Long id) {
-        if (id == null) return null;
-        return entityManager().find(Visit.class, id);
-    }
-    
-    public static List<Visit> Visit.findVisitEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM Visit o", Visit.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
 }

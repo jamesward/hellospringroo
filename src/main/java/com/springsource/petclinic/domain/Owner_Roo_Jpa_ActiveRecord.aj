@@ -4,19 +4,10 @@
 package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.Owner;
-import java.lang.Long;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
-privileged aspect Owner_Roo_Entity {
-    
-    @Transactional
-    public Owner Owner.merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        Owner merged = this.entityManager.merge(this);
-        this.entityManager.flush();
-        return merged;
-    }
+privileged aspect Owner_Roo_Jpa_ActiveRecord {
     
     public static long Owner.countOwners() {
         return entityManager().createQuery("SELECT COUNT(o) FROM Owner o", Long.class).getSingleResult();
@@ -33,6 +24,14 @@ privileged aspect Owner_Roo_Entity {
     
     public static List<Owner> Owner.findOwnerEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM Owner o", Owner.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    @Transactional
+    public Owner Owner.merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        Owner merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
     }
     
 }

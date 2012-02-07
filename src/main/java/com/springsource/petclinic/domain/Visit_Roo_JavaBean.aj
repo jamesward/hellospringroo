@@ -5,7 +5,7 @@ package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.Pet;
 import com.springsource.petclinic.domain.Vet;
-import java.lang.String;
+import com.springsource.petclinic.domain.Visit;
 import java.util.Date;
 
 privileged aspect Visit_Roo_JavaBean {

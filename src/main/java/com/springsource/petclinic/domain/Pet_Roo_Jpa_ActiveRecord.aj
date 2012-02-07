@@ -4,16 +4,38 @@
 package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.Pet;
-import java.lang.Long;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
-privileged aspect Pet_Roo_Entity {
+privileged aspect Pet_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
     transient EntityManager Pet.entityManager;
+    
+    public static final EntityManager Pet.entityManager() {
+        EntityManager em = new Pet().entityManager;
+        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        return em;
+    }
+    
+    public static long Pet.countPets() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM Pet o", Long.class).getSingleResult();
+    }
+    
+    public static List<Pet> Pet.findAllPets() {
+        return entityManager().createQuery("SELECT o FROM Pet o", Pet.class).getResultList();
+    }
+    
+    public static Pet Pet.findPet(Long id) {
+        if (id == null) return null;
+        return entityManager().find(Pet.class, id);
+    }
+    
+    public static List<Pet> Pet.findPetEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM Pet o", Pet.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
     
     @Transactional
     public void Pet.persist() {
@@ -50,29 +72,6 @@ privileged aspect Pet_Roo_Entity {
         Pet merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
-    }
-    
-    public static final EntityManager Pet.entityManager() {
-        EntityManager em = new Pet().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
-        return em;
-    }
-    
-    public static long Pet.countPets() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM Pet o", Long.class).getSingleResult();
-    }
-    
-    public static List<Pet> Pet.findAllPets() {
-        return entityManager().createQuery("SELECT o FROM Pet o", Pet.class).getResultList();
-    }
-    
-    public static Pet Pet.findPet(Long id) {
-        if (id == null) return null;
-        return entityManager().find(Pet.class, id);
-    }
-    
-    public static List<Pet> Pet.findPetEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM Pet o", Pet.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
 }

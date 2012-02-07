@@ -4,7 +4,6 @@
 package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.Visit;
-import java.lang.String;
 import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

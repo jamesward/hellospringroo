@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.VisitDataOnDemand;
 import org.springframework.beans.factory.annotation.Configurable;
 
 privileged aspect VisitDataOnDemand_Roo_Configurable {

@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.Vet;
 import org.springframework.beans.factory.annotation.Configurable;
 
 privileged aspect Vet_Roo_Configurable {

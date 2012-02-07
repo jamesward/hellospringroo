@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.Vet;
 import com.springsource.petclinic.reference.Specialty;
 import java.util.Calendar;
 

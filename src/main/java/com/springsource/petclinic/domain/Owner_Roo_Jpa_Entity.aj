@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.Owner;
 import javax.persistence.Entity;
 
 privileged aspect Owner_Roo_Jpa_Entity {

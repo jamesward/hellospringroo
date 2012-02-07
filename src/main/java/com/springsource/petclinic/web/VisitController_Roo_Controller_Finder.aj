@@ -4,7 +4,7 @@
 package com.springsource.petclinic.web;
 
 import com.springsource.petclinic.domain.Visit;
-import java.lang.String;
+import com.springsource.petclinic.web.VisitController;
 import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;

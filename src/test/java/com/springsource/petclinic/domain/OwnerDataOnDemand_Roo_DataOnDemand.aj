@@ -4,7 +4,7 @@
 package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.Owner;
-import java.lang.String;
+import com.springsource.petclinic.domain.OwnerDataOnDemand;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,7 +60,7 @@ privileged aspect OwnerDataOnDemand_Roo_DataOnDemand {
     }
     
     public void OwnerDataOnDemand.setEmail(Owner obj, int index) {
-        String email = "email_" + index;
+        String email = "foo" + index + "@bar.com";
         if (email.length() > 30) {
             email = email.substring(0, 30);
         }
@@ -98,17 +98,21 @@ privileged aspect OwnerDataOnDemand_Roo_DataOnDemand {
     
     public Owner OwnerDataOnDemand.getSpecificOwner(int index) {
         init();
-        if (index < 0) index = 0;
-        if (index > (data.size() - 1)) index = data.size() - 1;
+        if (index < 0) {
+            index = 0;
+        }
+        if (index > (data.size() - 1)) {
+            index = data.size() - 1;
+        }
         Owner obj = data.get(index);
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Owner.findOwner(id);
     }
     
     public Owner OwnerDataOnDemand.getRandomOwner() {
         init();
         Owner obj = data.get(rnd.nextInt(data.size()));
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Owner.findOwner(id);
     }
     
@@ -120,20 +124,22 @@ privileged aspect OwnerDataOnDemand_Roo_DataOnDemand {
         int from = 0;
         int to = 10;
         data = Owner.findOwnerEntries(from, to);
-        if (data == null) throw new IllegalStateException("Find entries implementation for 'Owner' illegally returned null");
+        if (data == null) {
+            throw new IllegalStateException("Find entries implementation for 'Owner' illegally returned null");
+        }
         if (!data.isEmpty()) {
             return;
         }
         
-        data = new ArrayList<com.springsource.petclinic.domain.Owner>();
+        data = new ArrayList<Owner>();
         for (int i = 0; i < 10; i++) {
             Owner obj = getNewTransientOwner(i);
             try {
                 obj.persist();
             } catch (ConstraintViolationException e) {
                 StringBuilder msg = new StringBuilder();
-                for (Iterator<ConstraintViolation<?>> it = e.getConstraintViolations().iterator(); it.hasNext();) {
-                    ConstraintViolation<?> cv = it.next();
+                for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                    ConstraintViolation<?> cv = iter.next();
                     msg.append("[").append(cv.getConstraintDescriptor()).append(":").append(cv.getMessage()).append("=").append(cv.getInvalidValue()).append("]");
                 }
                 throw new RuntimeException(msg.toString(), e);

@@ -3,7 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
-import java.lang.String;
+import com.springsource.petclinic.domain.AbstractPerson;
 import java.util.Date;
 
 privileged aspect AbstractPerson_Roo_JavaBean {

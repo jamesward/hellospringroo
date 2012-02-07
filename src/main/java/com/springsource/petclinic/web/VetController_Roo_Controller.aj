@@ -5,19 +5,15 @@ package com.springsource.petclinic.web;
 
 import com.springsource.petclinic.domain.Vet;
 import com.springsource.petclinic.reference.Specialty;
+import com.springsource.petclinic.web.VetController;
 import java.io.UnsupportedEncodingException;
-import java.lang.Integer;
-import java.lang.Long;
-import java.lang.String;
 import java.util.Arrays;
-import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,11 +23,10 @@ import org.springframework.web.util.WebUtils;
 
 privileged aspect VetController_Roo_Controller {
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String VetController.create(@Valid Vet vet, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("vet", vet);
-            addDateTimeFormatPatterns(uiModel);
+            populateEditForm(uiModel, vet);
             return "vets/create";
         }
         uiModel.asMap().clear();
@@ -39,14 +34,13 @@ privileged aspect VetController_Roo_Controller {
         return "redirect:/vets/" + encodeUrlPathSegment(vet.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(params = "form", method = RequestMethod.GET)
+    @RequestMapping(params = "form", produces = "text/html")
     public String VetController.createForm(Model uiModel) {
-        uiModel.addAttribute("vet", new Vet());
-        addDateTimeFormatPatterns(uiModel);
+        populateEditForm(uiModel, new Vet());
         return "vets/create";
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", produces = "text/html")
     public String VetController.show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("vet", Vet.findVet(id));
@@ -54,7 +48,7 @@ privileged aspect VetController_Roo_Controller {
         return "vets/show";
     }
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(produces = "text/html")
     public String VetController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
@@ -69,11 +63,10 @@ privileged aspect VetController_Roo_Controller {
         return "vets/list";
     }
     
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
     public String VetController.update(@Valid Vet vet, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("vet", vet);
-            addDateTimeFormatPatterns(uiModel);
+            populateEditForm(uiModel, vet);
             return "vets/update";
         }
         uiModel.asMap().clear();
@@ -81,14 +74,13 @@ privileged aspect VetController_Roo_Controller {
         return "redirect:/vets/" + encodeUrlPathSegment(vet.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String VetController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("vet", Vet.findVet(id));
-        addDateTimeFormatPatterns(uiModel);
+        populateEditForm(uiModel, Vet.findVet(id));
         return "vets/update";
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String VetController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         Vet vet = Vet.findVet(id);
         vet.remove();
@@ -98,19 +90,15 @@ privileged aspect VetController_Roo_Controller {
         return "redirect:/vets";
     }
     
-    @ModelAttribute("vets")
-    public Collection<Vet> VetController.populateVets() {
-        return Vet.findAllVets();
-    }
-    
-    @ModelAttribute("specialtys")
-    public Collection<Specialty> VetController.populateSpecialtys() {
-        return Arrays.asList(Specialty.class.getEnumConstants());
-    }
-    
     void VetController.addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("vet_birthday_date_format", DateTimeFormat.patternForStyle("M-", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("vet_employedsince_date_format", DateTimeFormat.patternForStyle("M-", LocaleContextHolder.getLocale()));
+    }
+    
+    void VetController.populateEditForm(Model uiModel, Vet vet) {
+        uiModel.addAttribute("vet", vet);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("specialtys", Arrays.asList(Specialty.values()));
     }
     
     String VetController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
@@ -120,8 +108,7 @@ privileged aspect VetController_Roo_Controller {
         }
         try {
             pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        }
-        catch (UnsupportedEncodingException uee) {}
+        } catch (UnsupportedEncodingException uee) {}
         return pathSegment;
     }
     

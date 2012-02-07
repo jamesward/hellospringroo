@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.AbstractPerson;
 import org.springframework.beans.factory.annotation.Configurable;
 
 privileged aspect AbstractPerson_Roo_Configurable {

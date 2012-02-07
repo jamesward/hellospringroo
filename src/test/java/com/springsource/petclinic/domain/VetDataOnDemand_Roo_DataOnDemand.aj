@@ -4,8 +4,8 @@
 package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.Vet;
+import com.springsource.petclinic.domain.VetDataOnDemand;
 import com.springsource.petclinic.reference.Specialty;
-import java.lang.String;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,7 +63,7 @@ privileged aspect VetDataOnDemand_Roo_DataOnDemand {
     }
     
     public void VetDataOnDemand.setEmail(Vet obj, int index) {
-        String email = "email_" + index;
+        String email = "foo" + index + "@bar.com";
         if (email.length() > 30) {
             email = email.substring(0, 30);
         }
@@ -111,17 +111,21 @@ privileged aspect VetDataOnDemand_Roo_DataOnDemand {
     
     public Vet VetDataOnDemand.getSpecificVet(int index) {
         init();
-        if (index < 0) index = 0;
-        if (index > (data.size() - 1)) index = data.size() - 1;
+        if (index < 0) {
+            index = 0;
+        }
+        if (index > (data.size() - 1)) {
+            index = data.size() - 1;
+        }
         Vet obj = data.get(index);
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Vet.findVet(id);
     }
     
     public Vet VetDataOnDemand.getRandomVet() {
         init();
         Vet obj = data.get(rnd.nextInt(data.size()));
-        java.lang.Long id = obj.getId();
+        Long id = obj.getId();
         return Vet.findVet(id);
     }
     
@@ -133,20 +137,22 @@ privileged aspect VetDataOnDemand_Roo_DataOnDemand {
         int from = 0;
         int to = 10;
         data = Vet.findVetEntries(from, to);
-        if (data == null) throw new IllegalStateException("Find entries implementation for 'Vet' illegally returned null");
+        if (data == null) {
+            throw new IllegalStateException("Find entries implementation for 'Vet' illegally returned null");
+        }
         if (!data.isEmpty()) {
             return;
         }
         
-        data = new ArrayList<com.springsource.petclinic.domain.Vet>();
+        data = new ArrayList<Vet>();
         for (int i = 0; i < 10; i++) {
             Vet obj = getNewTransientVet(i);
             try {
                 obj.persist();
             } catch (ConstraintViolationException e) {
                 StringBuilder msg = new StringBuilder();
-                for (Iterator<ConstraintViolation<?>> it = e.getConstraintViolations().iterator(); it.hasNext();) {
-                    ConstraintViolation<?> cv = it.next();
+                for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                    ConstraintViolation<?> cv = iter.next();
                     msg.append("[").append(cv.getConstraintDescriptor()).append(":").append(cv.getMessage()).append("=").append(cv.getInvalidValue()).append("]");
                 }
                 throw new RuntimeException(msg.toString(), e);

@@ -3,6 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
+import com.springsource.petclinic.domain.Owner;
 import com.springsource.petclinic.domain.Pet;
 import java.util.Set;
 

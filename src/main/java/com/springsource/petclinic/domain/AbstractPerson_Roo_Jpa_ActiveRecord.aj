@@ -4,16 +4,39 @@
 package com.springsource.petclinic.domain;
 
 import com.springsource.petclinic.domain.AbstractPerson;
-import java.lang.Long;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
-privileged aspect AbstractPerson_Roo_Entity {
+privileged aspect AbstractPerson_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
     transient EntityManager AbstractPerson.entityManager;
+    
+    public static final EntityManager AbstractPerson.entityManager() {
+        EntityManager em = new AbstractPerson() {
+        }.entityManager;
+        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        return em;
+    }
+    
+    public static long AbstractPerson.countAbstractpeople() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM AbstractPerson o", Long.class).getSingleResult();
+    }
+    
+    public static List<AbstractPerson> AbstractPerson.findAllAbstractpeople() {
+        return entityManager().createQuery("SELECT o FROM AbstractPerson o", AbstractPerson.class).getResultList();
+    }
+    
+    public static AbstractPerson AbstractPerson.findAbstractPerson(Long id) {
+        if (id == null) return null;
+        return entityManager().find(AbstractPerson.class, id);
+    }
+    
+    public static List<AbstractPerson> AbstractPerson.findAbstractPersonEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM AbstractPerson o", AbstractPerson.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
     
     @Transactional
     public void AbstractPerson.persist() {
@@ -50,30 +73,6 @@ privileged aspect AbstractPerson_Roo_Entity {
         AbstractPerson merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
-    }
-    
-    public static final EntityManager AbstractPerson.entityManager() {
-        EntityManager em = new AbstractPerson() {
-        }.entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
-        return em;
-    }
-    
-    public static long AbstractPerson.countAbstractpeople() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM AbstractPerson o", Long.class).getSingleResult();
-    }
-    
-    public static List<AbstractPerson> AbstractPerson.findAllAbstractpeople() {
-        return entityManager().createQuery("SELECT o FROM AbstractPerson o", AbstractPerson.class).getResultList();
-    }
-    
-    public static AbstractPerson AbstractPerson.findAbstractPerson(Long id) {
-        if (id == null) return null;
-        return entityManager().find(AbstractPerson.class, id);
-    }
-    
-    public static List<AbstractPerson> AbstractPerson.findAbstractPersonEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM AbstractPerson o", AbstractPerson.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
 }

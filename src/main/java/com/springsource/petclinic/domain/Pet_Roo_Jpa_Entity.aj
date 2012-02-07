@@ -3,8 +3,7 @@
 
 package com.springsource.petclinic.domain;
 
-import java.lang.Integer;
-import java.lang.Long;
+import com.springsource.petclinic.domain.Pet;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
