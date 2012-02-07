@@ -56,7 +56,6 @@
 
     <beans profile="default">
         <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
-            <property name="persistenceUnitName" value="persistenceUnit"/>
             <property name="jpaProperties">
                 <props>
                     <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
@@ -87,7 +86,6 @@
         <!-- The format for DATABASE_URL is: postgres://user:password@hostname/databasename -->
 
         <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
-            <property name="persistenceUnitName" value="persistenceUnit"/>
             <property name="jpaProperties">
                 <props>
                     <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
