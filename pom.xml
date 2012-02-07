@@ -308,6 +308,9 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
                 <!-- <configuration> <webXml>target/web.xml</webXml> </configuration> -->
+                <configuration>
+                    <webappDirectory>${project.build.directory}/${project.build.finalName}.war</webappDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -466,22 +469,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>copy</goal></goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.mortbay.jetty</groupId>
-                                    <artifactId>jetty-runner</artifactId>
-                                    <version>7.4.5.v20110725</version>
-                                    <destFileName>jetty-runner.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>org.mortbay.jetty</groupId>
+                            <artifactId>jetty-runner</artifactId>
+                            <version>7.4.5.v20110725</version>
+                            <destFileName>jetty-runner.jar</destFileName>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
             </plugin>
         </plugins>
     </build>
