@@ -84,6 +84,7 @@
 
     <beans profile="prod">
         <!-- This profile uses a DATABASE_URL to connect to a PostgreSQL database -->
+        <!-- In this profile the hibernate.hbm2ddl.auto is update -->
         <!-- The format for DATABASE_URL is: postgres://user:password@hostname/databasename -->
 
         <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
